@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /ramps/{rampId} {
+
+      // Anyone can read ramp data, this is a public registry.
+      allow read: if true;
+
+      // Only signed-in (including anonymous) users can create a report,
+      // and only with valid, bounded data. No updates or deletes from
+      // the client, edits/moderation should go through an admin tool
+      // or Cloud Function with elevated privileges.
+      allow create: if request.auth != null
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() < 200
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.lat is number
+        && request.resource.data.lng is number
+        && request.resource.data.lat >= -90 && request.resource.data.lat <= 90
+        && request.resource.data.lng >= -180 && request.resource.data.lng <= 180
+        && (!("note" in request.resource.data) || request.resource.data.note.size() < 1000)
+        && (!("address" in request.resource.data) || request.resource.data.address.size() < 300)
+        && (!("photoUrl" in request.resource.data) || (request.resource.data.photoUrl is string && request.resource.data.photoUrl.size() < 600));
+
+      allow update, delete: if false;
+    }
+  }
+}
