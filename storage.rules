@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    match /ramp-photos/{fileName} {
+
+      // Anyone can view photos, they're part of the public registry.
+      allow read: if true;
+
+      // Only signed-in (including anonymous) users can upload, and only
+      // images under 5MB. The client compresses to ~1MB already, this
+      // is a hard backstop against someone bypassing the client code.
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if false;
+    }
+  }
+}
