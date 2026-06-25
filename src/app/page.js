@@ -105,7 +105,6 @@ export default function Home() {
 
   return (
     <div className="app-shell">
-      <OnboardingOverlay />
       <header>
         <svg className="seal" viewBox="0 0 40 40" fill="none">
           <circle cx="20" cy="20" r="18.5" stroke="#C44536" strokeWidth="1.6" />
@@ -161,6 +160,7 @@ export default function Home() {
           }}
         />
         <div id="map">
+          <OnboardingOverlay />
           <RampMap
             ramps={filter === 0 ? ramps : ramps.filter((r) => r.rating === filter)}
             onMapClick={handleMapClick}

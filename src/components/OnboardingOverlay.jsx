@@ -10,7 +10,10 @@ export default function OnboardingOverlay() {
   useEffect(() => {
     try {
       if (!window.localStorage.getItem(STORAGE_KEY)) {
-        setShow(true);
+        // Small delay so the map is visible first, this is a hint,
+        // not a gate the person has to clear before seeing the product.
+        const t = setTimeout(() => setShow(true), 600);
+        return () => clearTimeout(t);
       }
     } catch {
       // localStorage unavailable (private browsing etc), just skip onboarding
@@ -29,55 +32,24 @@ export default function OnboardingOverlay() {
   if (!show) return null;
 
   return (
-    <div className="onboarding-overlay" onClick={dismiss}>
-      <div className="onboarding-card" onClick={(e) => e.stopPropagation()}>
-        <div className="onboarding-head">
-          <div className="onboarding-title">Welcome to RampWatch PH</div>
-          <button className="modal-x" onClick={dismiss}>×</button>
-        </div>
-
-        <div className="onboarding-body">
-          <p className="onboarding-lede">
-            A public registry of wheelchair ramp accessibility across the Philippines, built by people who actually use these ramps.
-          </p>
-
-          <div className="onboarding-step">
-            <span className="onboarding-step-num">1</span>
-            <div>
-              <strong>Browse the map</strong>
-              <p>Each pin is a reported ramp. The number and color show its accessibility rating.</p>
-            </div>
-          </div>
-
-          <div className="onboarding-step">
-            <span className="onboarding-step-num">2</span>
-            <div>
-              <strong>Click a pin or list item</strong>
-              <p>See details, notes from the reporter, and when it was assessed.</p>
-            </div>
-          </div>
-
-          <div className="onboarding-step">
-            <span className="onboarding-step-num">3</span>
-            <div>
-              <strong>Report a ramp</strong>
-              <p>Click anywhere on the map, or use the button up top, type the establishment name, and rate what you see.</p>
-            </div>
-          </div>
-
-          <div className="onboarding-scale">
-            <span className="dot" style={{ background: "#C44536" }}></span>
-            <span>1 Unusable</span>
-            <span className="onboarding-scale-arrow">→</span>
-            <span className="dot" style={{ background: "#3A7D5C" }}></span>
-            <span>5 Fully accessible</span>
-          </div>
-        </div>
-
-        <div className="onboarding-foot">
-          <button className="btn-save" onClick={dismiss}>Got it, let's go</button>
-        </div>
+    <div className="onboarding-tip">
+      <button className="onboarding-tip-close" onClick={dismiss} aria-label="Dismiss">
+        ×
+      </button>
+      <div className="onboarding-tip-title">How RampWatch works</div>
+      <p className="onboarding-tip-text">
+        Pins show reported ramps, colored by rating. Click one for details, or click anywhere on the map to report a new one.
+      </p>
+      <div className="onboarding-tip-scale">
+        <span className="dot" style={{ background: "#C44536" }}></span>
+        <span>Unusable</span>
+        <span className="onboarding-scale-arrow">→</span>
+        <span className="dot" style={{ background: "#3A7D5C" }}></span>
+        <span>Fully accessible</span>
       </div>
+      <button className="onboarding-tip-dismiss" onClick={dismiss}>
+        Got it
+      </button>
     </div>
   );
 }
