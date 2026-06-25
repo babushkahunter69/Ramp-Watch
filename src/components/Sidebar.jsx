@@ -59,6 +59,11 @@ export default function Sidebar({ ramps, filter, setFilter, selectedId, onSelect
                 {r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString("en-US", {
                   month: "short", day: "numeric", year: "numeric"
                 }) : "Just now"}
+                {r.reporterId === "seed-data" && (
+                  <a href="/about" className="sourced-tag" onClick={(e) => e.stopPropagation()}>
+                    Sourced from public reporting
+                  </a>
+                )}
               </div>
             </div>
           </div>

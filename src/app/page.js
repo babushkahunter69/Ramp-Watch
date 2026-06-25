@@ -127,6 +127,7 @@ export default function Home() {
           <div className="count-display">
             <strong>{ramps.length}</strong>RAMPS RECORDED
           </div>
+          <a href="/about" className="header-about-link">About the data</a>
           <button className="btn-report" onClick={handleOpenModalFromHeader}>
             Report a Ramp
           </button>

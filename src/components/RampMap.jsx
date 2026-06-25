@@ -109,6 +109,11 @@ export default function RampMap({ ramps, onMapClick, selectedId, onSelect, isLoa
             </div>
           </div>
           <div className="detail-note">{selected.note || "No additional notes."}</div>
+          {selected.reporterId === "seed-data" && (
+            <a href="/about" className="sourced-tag sourced-tag-detail">
+              Sourced from public reporting — view methodology
+            </a>
+          )}
           <div className="detail-foot">
             <span className="detail-date">
               {selected.createdAt?.toDate
