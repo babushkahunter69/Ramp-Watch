@@ -7,19 +7,43 @@ import {
   orderBy,
   serverTimestamp,
   Timestamp,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { validateName, validateNote } from "./validation";
 
 const RAMPS_COL = "ramps";
 const SUBMISSION_COOLDOWN_MINUTES = 2;
 const MAX_SUBMISSIONS_PER_DAY = 20;
 
-// Fetch all ramps, newest first. For nationwide scale this should later
-// be paginated or filtered by map bounds, but this is fine to start.
+// Fetch approved ramps, newest first, for the public map/list.
 export async function fetchRamps() {
-  const q = query(collection(db, RAMPS_COL), orderBy("createdAt", "desc"));
+  const q = query(
+    collection(db, RAMPS_COL),
+    where("status", "==", "approved"),
+    orderBy("createdAt", "desc")
+  );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+// For the admin queue: everything waiting on a decision.
+export async function fetchPendingRamps() {
+  const q = query(
+    collection(db, RAMPS_COL),
+    where("status", "==", "pending"),
+    orderBy("createdAt", "desc")
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function setRampStatus(rampId, status) {
+  if (!["approved", "rejected"].includes(status)) {
+    throw new Error("Invalid status.");
+  }
+  await updateDoc(doc(db, RAMPS_COL, rampId), { status });
 }
 
 // Basic abuse guard: checks how many reports this uid made recently.
@@ -51,7 +75,10 @@ async function checkRateLimit(uid) {
 
 export async function submitRamp({ uid, name, address, rating, note, lat, lng, photoUrl }) {
   if (!uid) throw new Error("Not signed in yet.");
-  if (!name?.trim()) throw new Error("Establishment name is required.");
+  const nameError = validateName(name);
+  if (nameError) throw new Error(nameError);
+  const noteError = validateNote(note);
+  if (noteError) throw new Error(noteError);
   if (!rating || rating < 1 || rating > 5) throw new Error("Rating must be 1 to 5.");
   if (typeof lat !== "number" || typeof lng !== "number") {
     throw new Error("Location is required.");
@@ -68,6 +95,7 @@ export async function submitRamp({ uid, name, address, rating, note, lat, lng, p
     lng,
     photoUrl: photoUrl || "",
     reporterId: uid,
+    status: "pending",
     createdAt: serverTimestamp(),
   });
 

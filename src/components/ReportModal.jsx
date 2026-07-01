@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { RATING_LABELS } from "@/lib/constants";
 import PlaceAutocompleteInput from "@/components/PlaceAutocompleteInput";
+import { validateName, validateNote } from "@/lib/validation";
 
 export default function ReportModal({ open, coords, onClose, onSubmit, mapsLoaded }) {
   const [name, setName] = useState("");
@@ -51,8 +52,14 @@ export default function ReportModal({ open, coords, onClose, onSubmit, mapsLoade
   }
 
   async function handleSubmit() {
-    if (!name.trim()) {
-      setError("Enter the establishment name.");
+    const nameError = validateName(name);
+    if (nameError) {
+      setError(nameError);
+      return;
+    }
+    const noteError = validateNote(note);
+    if (noteError) {
+      setError(noteError);
       return;
     }
     if (!rating) {

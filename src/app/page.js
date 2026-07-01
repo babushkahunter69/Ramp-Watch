@@ -100,7 +100,7 @@ export default function Home() {
     setModalOpen(false);
     setPendingCoords(null);
     await loadRamps();
-    showToast("Ramp reported. Thank you for contributing.");
+    showToast("Ramp reported. It'll appear once reviewed, thank you.");
   }
 
   return (
