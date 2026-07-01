@@ -147,6 +147,7 @@ export default function Home() {
         >
           List ({ramps.length})
         </button>
+        <a href="/about" className="mobile-about-link">About</a>
       </div>
 
       <div className={`workspace view-${mobileView}`}>

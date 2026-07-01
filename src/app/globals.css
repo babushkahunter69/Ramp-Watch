@@ -250,7 +250,19 @@ textarea.finput { height: auto; padding: 9px 12px; resize: none; line-height: 1.
 /* ── MOBILE TOGGLE ────────────────────── */
 .mobile-toggle { display: none; }
 
-/* ── MOBILE LAYOUT ────────────────────── */
+.mobile-about-link {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray);
+  text-decoration: none;
+  border-left: 1px solid var(--border);
+  white-space: nowrap;
+}
+.mobile-about-link:hover { color: var(--ink); }
 @media (max-width: 760px) {
   header { padding: 0 14px; height: 52px; }
   .masthead-title { font-size: 15px; }
